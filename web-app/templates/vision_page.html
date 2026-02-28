@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Visão - Chat com Gemma 3{% endblock %}
+
+{% block header %}Análise de Imagem{% endblock %}
+
+{% block content %}
+<div class="form-field">
+    <label>Selecione uma imagem</label>
+    <input type="file" id="image-input" accept="image/*">
+</div>
+<button id="analyze-btn">Analisar Imagem</button>
+<div id="image-result" style="margin-top: 16px;"></div>
+
+<script>
+    document.getElementById('analyze-btn').addEventListener('click', async function() {
+        const fileInput = document.getElementById('image-input');
+        const resultDiv = document.getElementById('image-result');
+        
+        if (!fileInput.files[0]) {
+            alert('Selecione uma imagem primeiro');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', fileInput.files[0]);
+
+        resultDiv.innerHTML = '<p>Analisando...</p>';
+
+        const response = await fetch('/vision', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        resultDiv.innerHTML = `<p><strong>Descrição:</strong> ${data.description || data.error}</p>`;
+    });
+</script>
+{% endblock %}

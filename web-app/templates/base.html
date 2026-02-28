@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Chat com Gemma 3{% endblock %}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; display: flex; height: 100vh; }
+        .sidebar { width: 250px; background: #232f3e; color: white; padding: 20px; }
+        .sidebar h2 { margin-bottom: 20px; font-size: 18px; }
+        .sidebar a { display: block; color: white; text-decoration: none; padding: 10px; margin-bottom: 5px; border-radius: 4px; }
+        .sidebar a:hover { background: #37475a; }
+        .sidebar a.active { background: #ec7211; }
+        .content { flex: 1; padding: 40px; overflow-y: auto; background: #f9f9f9; }
+        .header { font-size: 28px; font-weight: bold; margin-bottom: 20px; color: #232f3e; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        input[type="text"], input[type="file"] { padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: 100%; margin-bottom: 10px; }
+        button { padding: 10px 20px; background: #ec7211; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #d66010; }
+        .form-field { margin-bottom: 15px; }
+        .form-field label { display: block; margin-bottom: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Chat com Gemma 3</h2>
+        <a href="/" {% if request.path == '/' %}class="active"{% endif %}>Principal</a>
+        <a href="/chat" {% if request.path == '/chat' %}class="active"{% endif %}>Chat de Texto</a>
+        <a href="/vision-page" {% if request.path == '/vision-page' %}class="active"{% endif %}>Visão</a>
+        <a href="/support" {% if request.path == '/support' %}class="active"{% endif %}>Suporte</a>
+        <a href="/contact" {% if request.path == '/contact' %}class="active"{% endif %}>Contato</a>
+    </div>
+    <div class="content">
+        <div class="header">{% block header %}Chat com Gemma 3{% endblock %}</div>
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</body>
+</html>
