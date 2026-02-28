@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Chat com Gemma 3{% endblock %}</title>
+    <title>{% block title %}Projeto CTDOYA{% endblock %}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; display: flex; height: 100vh; }
@@ -24,15 +24,16 @@
 </head>
 <body>
     <div class="sidebar">
-        <h2>Chat com Gemma 3</h2>
+        <h2>Projeto CTDOYA</h2>
         <a href="/" {% if request.path == '/' %}class="active"{% endif %}>Principal</a>
         <a href="/chat" {% if request.path == '/chat' %}class="active"{% endif %}>Chat de Texto</a>
         <a href="/vision-page" {% if request.path == '/vision-page' %}class="active"{% endif %}>Visão</a>
+        <a href="/cloud" {% if request.path == '/cloud' %}class="active"{% endif %}>Cloud</a>
         <a href="/support" {% if request.path == '/support' %}class="active"{% endif %}>Suporte</a>
         <a href="/contact" {% if request.path == '/contact' %}class="active"{% endif %}>Contato</a>
     </div>
     <div class="content">
-        <div class="header">{% block header %}Chat com Gemma 3{% endblock %}</div>
+        <div class="header">{% block header %}Projeto CTDOYA{% endblock %}</div>
         <div class="container">
             {% block content %}{% endblock %}
         </div>

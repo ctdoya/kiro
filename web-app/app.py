@@ -3,6 +3,8 @@ from ollama import chat
 import json
 import hashlib
 from datetime import datetime
+import boto3
+import base64
 
 app = Flask(__name__)
 
@@ -17,6 +19,10 @@ def chat_page():
 @app.route('/vision-page')
 def vision_page():
     return render_template('vision_page.html')
+
+@app.route('/cloud')
+def cloud():
+    return render_template('cloud.html')
 
 @app.route('/support')
 def support():
@@ -43,6 +49,57 @@ def api_prompt():
         "datahora": datahora,
         "id": hash_id
     })
+
+@app.route('/cloud/bedrock', methods=['POST'])
+def cloud_bedrock():
+    prompt = request.json.get('prompt', '')
+    
+    try:
+        bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+        
+        body = json.dumps({
+            "messages": [{"role": "user", "content": [{"text": prompt}]}],
+            "inferenceConfig": {"maxTokens": 512, "temperature": 0.7}
+        })
+        
+        response = bedrock.invoke_model(
+            modelId='us.amazon.nova-lite-v1:0',
+            body=body
+        )
+        
+        response_body = json.loads(response['body'].read())
+        return jsonify({"response": response_body['output']['message']['content'][0]['text']})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/cloud/canvas', methods=['POST'])
+def cloud_canvas():
+    prompt = request.json.get('prompt', '')
+    
+    try:
+        bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+        
+        body = json.dumps({
+            "taskType": "TEXT_IMAGE",
+            "textToImageParams": {"text": prompt},
+            "imageGenerationConfig": {
+                "numberOfImages": 1,
+                "quality": "standard",
+                "width": 512,
+                "height": 512
+            }
+        })
+        
+        response = bedrock.invoke_model(
+            modelId='amazon.nova-canvas-v1:0',
+            body=body
+        )
+        
+        response_body = json.loads(response['body'].read())
+        image_base64 = response_body['images'][0]
+        return jsonify({"image": image_base64})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/ask', methods=['POST'])
 def ask():

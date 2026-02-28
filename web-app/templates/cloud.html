@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Cloud - Projeto CTDOYA{% endblock %}
+
+{% block header %}AWS Bedrock{% endblock %}
+
+{% block content %}
+<style>
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ccc; }
+    .tab { padding: 10px 20px; cursor: pointer; background: #f0f0f0; border: none; }
+    .tab.active { background: #ec7211; color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+</style>
+
+<div class="tabs">
+    <button class="tab active" onclick="showTab('bedrock')">Bedrock Nova Lite</button>
+    <button class="tab" onclick="showTab('canvas')">Nova Canvas</button>
+</div>
+
+<div id="bedrock" class="tab-content active">
+    <div class="form-field">
+        <label>Prompt</label>
+        <input type="text" id="bedrock-prompt" placeholder="Digite seu prompt...">
+    </div>
+    <button id="bedrock-send">Enviar</button>
+    <div id="bedrock-result" style="margin-top: 16px; padding: 16px; background: #f9f9f9; border-radius: 8px; min-height: 100px;"></div>
+</div>
+
+<div id="canvas" class="tab-content">
+    <div class="form-field">
+        <label>Prompt para Imagem</label>
+        <input type="text" id="canvas-prompt" placeholder="Descreva a imagem que deseja gerar...">
+    </div>
+    <button id="canvas-send">Gerar Imagem</button>
+    <div id="canvas-result" style="margin-top: 16px;"></div>
+</div>
+
+<script>
+    function showTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(tab).classList.add('active');
+    }
+
+    // Bedrock Nova Lite
+    document.getElementById('bedrock-send').addEventListener('click', async function() {
+        const prompt = document.getElementById('bedrock-prompt').value.trim();
+        const resultDiv = document.getElementById('bedrock-result');
+        
+        if (!prompt) {
+            alert('Digite um prompt');
+            return;
+        }
+
+        resultDiv.innerHTML = '<p>Processando...</p>';
+
+        const response = await fetch('/cloud/bedrock', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
+        });
+
+        const data = await response.json();
+        resultDiv.innerHTML = `<p><strong>Resposta:</strong> ${data.response || data.error}</p>`;
+    });
+
+    // Nova Canvas
+    document.getElementById('canvas-send').addEventListener('click', async function() {
+        const prompt = document.getElementById('canvas-prompt').value.trim();
+        const resultDiv = document.getElementById('canvas-result');
+        
+        if (!prompt) {
+            alert('Digite um prompt');
+            return;
+        }
+
+        resultDiv.innerHTML = '<p>Gerando imagem...</p>';
+
+        const response = await fetch('/cloud/canvas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
+        });
+
+        const data = await response.json();
+        if (data.image) {
+            resultDiv.innerHTML = `<img src="data:image/png;base64,${data.image}" style="max-width: 100%; border-radius: 8px;">`;
+        } else {
+            resultDiv.innerHTML = `<p><strong>Erro:</strong> ${data.error}</p>`;
+        }
+    });
+</script>
+{% endblock %}
